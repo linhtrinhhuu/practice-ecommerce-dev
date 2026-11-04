@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-export class BasePage{
+export class BasePage {
     page: Page;
     searchBox: Locator;
     homeMenu: Locator;
@@ -8,9 +8,11 @@ export class BasePage{
     blogMenu: Locator;
     resultItem: Locator;
     itemHeading: Locator;
-    textResult: Locator;
+    resultText: Locator;
+    cartCounter: Locator;
+    cartAmount: Locator;
 
-    constructor(page: Page){
+    constructor(page: Page) {
         this.page = page;
         this.searchBox = page.getByRole("textbox", { name: "Search products..." });
         this.homeMenu = page.getByRole("link", { name: "Trang chủ" });
@@ -18,7 +20,9 @@ export class BasePage{
         this.blogMenu = page.getByRole("link", { name: "Blog" });
         this.resultItem = page.locator("li.product");
         this.itemHeading = this.resultItem.locator("h2");
-        this.textResult = page.getByText("Showing all");
+        this.resultText = page.getByText("Showing all");
+        this.cartCounter = page.locator('.cart-counter .count');
+        this.cartAmount = page.locator('.amount-cart');
     }
 
     async verifySearchBoxHavePlaceholder() {
@@ -46,9 +50,28 @@ export class BasePage{
 
     async verifyResultItemNumberMacthTextResultNumber() {
         const resultItemNumber = await this.resultItem.count();
-        const textResultString = (await this.textResult.innerText()).replace("Showing all", "").replace("results", "").trim();
-        const textResultNumber = parseInt(textResultString);
+        const resultString = (await this.resultText.innerText()).replace("Showing all", "").replace("results", "").trim();
+        const resultNumber = parseInt(resultString);
 
-        await expect(resultItemNumber).toBe(textResultNumber);
+        await expect(resultItemNumber).toBe(resultNumber);
+    }
+
+    async parsePriceToNumber(priceString: string) {
+        const cleanPriceStr = priceString.replace(/\./g, '').replace(/[^\d]/g, '');
+        return Number(cleanPriceStr);
+    }
+
+    async verifyCartCounter(quantity: number) {
+        const cartCounterNum = Number(await this.cartCounter.textContent());
+        await expect(cartCounterNum).toBe(quantity);
+    }
+
+    async verifyCartAmount(quantity: number, price: number) {
+        console.log(`cartAmount: ${await this.cartAmount.innerText()}`);
+        await expect(this.cartAmount).not.toHaveText(''); // We got flaky test on row below. So this row to make sure cartAmount not null.
+        const cartAmountNum = await this.parsePriceToNumber(await this.cartAmount.innerText());
+        console.log(`cartAmountNum: ${cartAmountNum}`);
+        const cartAmountExpected = quantity * price;
+        await expect(cartAmountNum).toBe(cartAmountExpected);
     }
 }

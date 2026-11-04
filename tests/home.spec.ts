@@ -1,23 +1,19 @@
-import { test } from "@playwright/test";
-import { HomePage } from "../pages/home.page";
+import { test } from '../src/fixtures/home.fixture';
 
 test.describe("Kiểm tra homepage", () => {
-    let homePage: HomePage;
 
-    test.beforeEach(async ({ page }) => {
-        homePage = new HomePage(page);
+    // Fixture:
+        // Before
+        // Đi tới trang https://e-commerce-dev.betterbytesvn.com/
 
-        // Step 1: Đi tới trang https://e-commerce-dev.betterbytesvn.com/
-        await test.step("Step 1: Đi tới trang https://e-commerce-dev.betterbytesvn.com/", async () => {
-            await homePage.go();
-        });
-    });
-    test("HOME_001: Kiểm tra homepage hiển thị thành công", async () => {
+        // After
+
+    test("HOME_001: Kiểm tra homepage hiển thị thành công", async ({ homePage }) => {
         const homePageData = {
             title: /E-commerce site testing/
         };
 
-        // Step 2:  Verify trang chủ hiển thị thành công;
+        // Step 1:  Verify trang chủ hiển thị thành công;
         await test.step("Step 2: Verify trang chủ hiển thị thành công", async () => {
             await homePage.verifyTitlePageHave(homePageData.title);
             // Thanh tìm kiếm hiển thị placeholder "Search products..."
@@ -27,18 +23,18 @@ test.describe("Kiểm tra homepage", () => {
         });
     });
 
-    test("HOME_002: Kiểm tra tính năng search hoạt động đúng", async () => {
+    test("HOME_002: Kiểm tra tính năng search hoạt động đúng", async ({ homePage }) => {
         const homePageData = {
             searchString: "ISTQB"
         };
 
-        // Step 2: Search keyword "ISTQB"
-        await test.step('Step 2: Search keyword "ISTQB"', async () => {
+        // Step 1: Search keyword "ISTQB"
+        await test.step('Step 1: Search keyword "ISTQB"', async () => {
             await homePage.searchProduct(homePageData.searchString);
         });
 
-        // Step 3:  Verify tất cả kết quả
-        await test.step('Step 3: Verify kết quả', async () => {
+        // Step 2:  Verify tất cả kết quả
+        await test.step('Step 2: Verify kết quả', async () => {
             //Đều chứa "ISTQB"
             await homePage.verifyResultsContainString(homePageData.searchString);
 

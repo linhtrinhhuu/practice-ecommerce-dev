@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { BasePage } from "./base.page";
+import { BasePage } from "./client-base.page";
 
 export class HomePage extends BasePage{
     homeURL: string;
