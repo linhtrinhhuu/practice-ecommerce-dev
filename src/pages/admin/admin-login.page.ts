@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { AdminBasePage } from "./admin-base.page"
+import { AdminDashboardPage } from "./admin-dashboard.page";
 
 export class AdminLoginPage extends AdminBasePage {
     loginURL: string;
@@ -10,6 +11,8 @@ export class AdminLoginPage extends AdminBasePage {
     registerLink: Locator;
     lostPasswordLink: Locator;
     goToEcommerceDevLink: Locator;
+    loginError: Locator;
+    lostPasswordLinkInErrorMsg: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -21,6 +24,8 @@ export class AdminLoginPage extends AdminBasePage {
         this.registerLink = page.getByRole('link', { name: 'Register' });
         this.lostPasswordLink = page.getByRole('link', { name: 'Lost your password?' });
         this.goToEcommerceDevLink = page.getByRole('link', { name: 'Go to E-Commerce' });
+        this.loginError = page.locator('#login_error');
+        this.lostPasswordLinkInErrorMsg = page.locator('#login_error').getByRole('link', { name: 'Lost your password?' });
     }
 
     async go() {
@@ -92,21 +97,51 @@ export class AdminLoginPage extends AdminBasePage {
         await this.goToEcommerceDevLink.click();
     }
 
-    async verifyRedirectOnRegisterLink(link: string) {
+    async verifyRedirectOnRegisterLink(expectedLink: string) {
         await this.clickRegisterLink();
-        await expect(this.page).toHaveURL(link);
+        await expect(this.page).toHaveURL(expectedLink);
         await this.page.goBack();
     }
 
-    async verifyRedirectOnLostPasswordLink(link: string) {
+    async verifyRedirectOnLostPasswordLink(expectedLink: string) {
         await this.clickLostPasswordLink();
-        await expect(this.page).toHaveURL(link);
-        await this.page.goBack();
-    }
-    async verifyRedirectOnGoToEcommerceDevLink(link: string) {
-        await this.clickGoToEcommerceDevLink();
-        await expect(this.page).toHaveURL(link);
+        await expect(this.page).toHaveURL(expectedLink);
         await this.page.goBack();
     }
 
+    async verifyRedirectOnGoToEcommerceDevLink(expectedLink: string) {
+        await this.clickGoToEcommerceDevLink();
+        await expect(this.page).toHaveURL(expectedLink);
+        await this.page.goBack();
+    }
+
+    async verifyLoggedInSuccessful(expectedURL: string, expectedUsername: string) {
+        // Verify chuyển hướng tới đúng trang admin
+        await expect(this.page).toHaveURL(expectedURL);
+
+        // Verify user đã login
+        const usernameLabel = await this.getUsernameLabel();
+        await expect(usernameLabel).toBe(expectedUsername);
+
+        return new AdminDashboardPage(this.page);
+    }
+
+    async verifyLoginUnsuccessful(expectedErrorMsg: string, link?: string) {
+        // - Đăng nhập không thành công, vẫn ở trang login.
+        await expect(this.page).toHaveURL(this.loginURL);
+
+        // - Hiển thị message lỗi: "Error: The username [user] is not registered on this site. If you are unsure of your username, try your email address instead."
+        const loginErrorMsg = await this.loginError.innerText();
+        await expect(loginErrorMsg).toBe(expectedErrorMsg);
+    }
+
+    async clickRedirectOnLostPasswordLinkInErrorMsg() {
+        await expect(this.lostPasswordLinkInErrorMsg).toBeEnabled();
+        await this.lostPasswordLinkInErrorMsg.click();
+    }
+
+    async verifyRedirectOnLostPasswordLinkInErrorMsg(expectedLink: string) {
+        await this.clickRedirectOnLostPasswordLinkInErrorMsg();
+        await expect(this.page).toHaveURL(expectedLink);
+    }
 }
