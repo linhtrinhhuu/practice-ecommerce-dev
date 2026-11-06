@@ -115,7 +115,7 @@ export class AdminLoginPage extends AdminBasePage {
         await this.page.goBack();
     }
 
-    async verifyLoggedInSuccessful(expectedURL: string, expectedUsername: string) {
+    async verifyLoggedInSuccessful(expectedURL: string, expectedUsername: string): Promise<AdminDashboardPage> {
         // Verify chuyển hướng tới đúng trang admin
         await expect(this.page).toHaveURL(expectedURL);
 
