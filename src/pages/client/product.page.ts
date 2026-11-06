@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { BasePage } from "./client-base.page";
+import { ClientBasePage } from "./client-base.page";
 
-export class ProductPage extends BasePage {
+export class ProductPage extends ClientBasePage {
     productURL: string;
     productName: Locator;
     originalPrice: Locator;
@@ -27,7 +27,7 @@ export class ProductPage extends BasePage {
 
     constructor(page: Page) {
         super(page);
-        this.productURL = 'https://e-commerce-dev.betterbytesvn.com/product';
+        this.productURL = 'https://e-commerce-dev.hoctest.com/product';
         this.productName = page.getByRole('heading', { level: 1 });
         this.originalPrice = page.locator('.summary').locator('.screen-reader-text').filter({ hasText: 'Original price was' });
         this.currentPrice = page.locator('.summary').locator('.screen-reader-text').filter({ hasText: 'Current price is' });
@@ -86,7 +86,7 @@ export class ProductPage extends BasePage {
 
     async verifyProductAddedToCart(quantity: number, price: number) {
         await this.verifyCartCounter(quantity);
-        await this.verifyCartAmount(quantity, price);
+        await this.verifyCartSubtotalAmount(quantity, price);
     }
 
     async clickReviewTab() {

@@ -1,12 +1,12 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { BasePage } from "./client-base.page";
+import { ClientBasePage } from "./client-base.page";
 
-export class HomePage extends BasePage{
+export class HomePage extends ClientBasePage{
     homeURL: string;
 
     constructor(page: Page) {
         super(page);
-        this.homeURL = "https://e-commerce-dev.betterbytesvn.com/";
+        this.homeURL = "https://e-commerce-dev.hoctest.com/";
     }
 
     async go() {

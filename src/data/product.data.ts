@@ -1,8 +1,8 @@
 const fullStackCourse = {
     path: "/fullstack-automation-qa-voi-playwright-typescript/",
     productName: "FullStack Automation QA với Playwright Typescript",
-    originalPrice: 2499000,
-    currentPrice: 1749000,
+    originalPrice: 100,
+    currentPrice: 70,
     productShortDesc: "Khoá học automation test từ chưa biết gì, với Playwright TypeScript",
     noReviewText: "There are no reviews yet."
 };
