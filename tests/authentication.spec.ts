@@ -2,6 +2,7 @@ import { test } from '../src/fixtures/admin/admin-login.fixture';
 import { authenticateData } from '../src/data/authenticate.data';
 import { ENV } from '../src/config/env';
 import { getRandomWord } from '../src/utils/helpers'
+import { AdminDashboardPage } from '../src/pages/admin/admin-dashboard.page';
 
 test.describe('Verify Authentication cases', async () => {
     test('AUTH_001: Verify UI trang authentication', async ({ adminLoginPage }) => {
@@ -24,13 +25,14 @@ test.describe('Verify Authentication cases', async () => {
 
     test('AUTH_002: Verify đăng nhập thành công với username và password đúng', async ({ adminLoginPage }) => {
         const data = authenticateData.AUTH_002;
-
+        let adminDashboardPage: AdminDashboardPage;
+        
         await test.step('Step 1: Thực hiện đăng nhập', async () => {
-            await adminLoginPage.loginAdmin(ENV.ADMIN_USER, ENV.ADMIN_PASS);
+            adminDashboardPage = await adminLoginPage.loginAdmin(ENV.ADMIN_USER, ENV.ADMIN_PASS);
         });
 
         await test.step('Step 2: Verify đăng nhập thành công', async () => {
-            const adminDashboardPage = await adminLoginPage.verifyLoggedInSuccessful(data.adminURL, ENV.ADMIN_USER);
+            await adminLoginPage.verifyLoggedInSuccessful(data.adminURL, ENV.ADMIN_USER);
             await adminDashboardPage.verifyDashboardPageDisplayed();
         });
     });

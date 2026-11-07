@@ -44,11 +44,13 @@ export class AdminLoginPage extends AdminBasePage {
         await this.loginButton.click();
     }
 
-    async loginAdmin(user: string, password: string) {
+    async loginAdmin(user: string, password: string): Promise<AdminDashboardPage> {
         await this.go();
         await this.fillUsername(user);
         await this.fillPassword(password);
         await this.clickLoginButton();
+
+        return new AdminDashboardPage(this.page);
     }
 
     async verifyUsernameTextboxEnabled() {
@@ -115,15 +117,13 @@ export class AdminLoginPage extends AdminBasePage {
         await this.page.goBack();
     }
 
-    async verifyLoggedInSuccessful(expectedURL: string, expectedUsername: string): Promise<AdminDashboardPage> {
+    async verifyLoggedInSuccessful(expectedURL: string, expectedUsername: string) {
         // Verify chuyển hướng tới đúng trang admin
         await expect(this.page).toHaveURL(expectedURL);
 
         // Verify user đã login
         const usernameLabel = await this.getUsernameLabel();
         await expect(usernameLabel).toBe(expectedUsername);
-
-        return new AdminDashboardPage(this.page);
     }
 
     async verifyLoginUnsuccessful(expectedErrorMsg: string, link?: string) {
